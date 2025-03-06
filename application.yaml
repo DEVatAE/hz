@@ -10,7 +10,12 @@ hazelcast:
   network:
     join:
       multicast:
+        enabled: false
+      tcp-ip:
         enabled: true
+        member-list:
+          - 127.0.0.1:5701
+          - 127.0.0.1:5702
 
 server:
   port: 8081
