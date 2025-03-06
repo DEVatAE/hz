@@ -12,7 +12,7 @@ public class CacheService {
     private final DatabaseService databaseService;
 
     public CacheService(HazelcastInstance hazelcastInstance, DatabaseService databaseService) {
-        this.cache = hazelcastInstance.getMap("cache");
+        this.cache = hazelcastInstance.getMap("cache-map");
         this.databaseService = databaseService;
     }
 
