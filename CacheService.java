@@ -1,22 +1,41 @@
-package com.example.hazelcastcache.service;
+package com.example.hazelcastCache.service;
 
-import org.springframework.cache.annotation.Cacheable;
+import com.hazelcast.map.IMap;
+import com.hazelcast.core.HazelcastInstance;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class CacheService {
+    private final IMap<String, String> cache;
+    private final DatabaseService databaseService;
 
-    @Cacheable(value = "my-cache", key = "#key")
-    public String getCachedValue(String key) {
-        simulateSlowService();
-        return "Value for key: " + key;
+    public CacheService(HazelcastInstance hazelcastInstance, DatabaseService databaseService) {
+        this.cache = hazelcastInstance.getMap("cache");
+        this.databaseService = databaseService;
     }
 
-    private void simulateSlowService() {
-        try {
-            Thread.sleep(3000); // 模拟耗时计算
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    public void populateInfo(String key, String value) {
+        cache.set(key, value);
+    }
+
+    public String getInfo(String key) {
+
+        String cachedValue = cache.get(key);
+        if (cachedValue != null) {
+            return "From Hazelcast Cache: " + cachedValue;
         }
+
+
+        String dbValue = databaseService.getFromDatabase(key);
+
+
+        if (dbValue != null) {
+            cache.set(key, dbValue);
+            return "From Database (Now Cached): " + dbValue;
+        }
+
+        return "Data not found";
     }
 }
