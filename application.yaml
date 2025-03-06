@@ -1,0 +1,16 @@
+spring:
+  cache:
+    type: hazelcast
+  application:
+    name: hazelcast-cache
+
+hazelcast:
+  cluster-name: hazelcast-cluster
+  instance-name: hazelcast-instance
+  network:
+    join:
+      multicast:
+        enabled: true
+
+server:
+  port: 8081
